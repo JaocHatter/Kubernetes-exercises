@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timeserver-np
+spec:
+  replicas: 15
+  selector:
+    matchLabels:
+      pod: timeserver-pod-np
+  template:
+    metadata:
+      labels:
+        pod: timeserver-pod-np
+    spec:
+      containers:
+      - name: timeserver-container
+        image: docker.io/wdenniss/timeserver:1
+        resources:
+          requests:
+            cpu: 200m
+            memory: 250Mi

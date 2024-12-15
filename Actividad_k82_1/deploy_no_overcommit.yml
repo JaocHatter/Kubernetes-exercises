@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: overcommit-deploy
+spec:
+  replicas: 20
+  selector:
+    matchLabels:
+      pod: overcommit-pod
+  template:
+    metadata:
+      labels:
+        pod: overcommit-pod
+    spec:
+      containers:
+      - name: timeserver-container
+        image: docker.io/wdenniss/timeserver:1
+        resources:
+          requests:
+            cpu: 200m
+            memory: 100Mi
