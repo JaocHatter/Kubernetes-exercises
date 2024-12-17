@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Servicio para jugar
+  batalla:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.jugar
+    environment:
+      - PYTHONUNBUFFERED=1 # Terminal
+    tty: true 
+    stdin_open: true
+    networks:
+      - monitoring
+
+  # Applicación en flask del juego
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile 
+    ports:
+      - "5000:5000"  
+    networks:
+      - monitoring
+  
+  # Prometheus
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml 
+    ports:
+      - "9090:9090" 
+    networks:
+      - monitoring
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"  
+    restart: unless-stopped
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  grafana-data:
